@@ -16,7 +16,7 @@ pip install matrix-nio
 If you need to scan encrypted rooms, install the extra encryption dependencies:
 
 ```bash
-pip install "matrix-nio[e2ee]"
+pip install "matrix-nio[e2e]"
 ```
 
 ## Session
