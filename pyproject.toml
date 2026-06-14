@@ -1,6 +1,6 @@
 [project]
 name = "localmoderationmatrix"
-version = "1.0.0"
+version = "1.0.1"
 description = "CLI moderation tool for bulk message deletion and media cleanup in public Matrix rooms."
 readme = "README.md"
 license = { text = "Apache-2.0" }
