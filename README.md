@@ -1,71 +1,105 @@
-# Local Moderation for Matrix
+# LocalModeration for Matrix
 
-CLI tool for bulk message deletion and media cleanup in Matrix rooms. Supports E2EE.
+A CLI tool for bulk message deletion, media cleanup, and sticker purge in Matrix rooms.
+
+> **Note:** This tool targets **public (unencrypted) rooms**. Encrypted messages are skipped automatically.
 
 ## Installation
 
-- Python 3.11
+**View on PyPI:** [pypi.org/project/localmoderationmatrix](https://pypi.org/project/localmoderationmatrix/)
 
-**Base Library:**
-
-```bash
-pip install matrix-nio
-```
-
-**Encrypted Room Support (Required for --e2ee):**
-If you need to scan encrypted rooms, install the extra encryption dependencies:
+**Using pip:**
 
 ```bash
-pip install "matrix-nio[e2ee]"
+pip install localmoderationmatrix
 ```
+
+**Using uv:**
+
+```bash
+uv tool install localmoderationmatrix
+```
+
+**Standalone Executable:** [GitHub Releases](https://github.com/berkaygediz/LocalModerationMatrix/releases)
 
 ## Session
 
-Once logged in, your session is saved. Just enter your **User ID** on the next run to auto-login without a password.
+Once logged in, your session is saved in your home directory. Just enter your **User ID** on the next run to auto-login.
 
 ## Usage
 
 ```bash
-python localmoderation.py <room_id> [options]
+localmoderationmatrix <room_id> [options]
 ```
 
-## Parameters
+### Parameters
 
 | Parameter | Description |
-| --------- | ----------- |
+| --- | --- |
+| `room_id` | (Required) The Matrix room ID. |
 | `--search` | Search for a single keyword. |
 | `--file` | Search using a wordlist file (one word per line). |
-| `--purge-media` | Delete media (images/videos) older than X days. Use `0` for all past media. |
-| `--e2ee` | **Required for encrypted rooms.** |
-| `--log-room` | Room ID to send deletion logs. |
-| `--days`, `--hours` | Time filter (Default: 1 hour). |
+| `--purge-media` | Delete media older than X days (`0` for all). |
+| `--purge-sticker` | Delete stickers older than X days (`0` for all). |
+| `--log-room` | Room ID to send moderation logs. |
+| `--days` | Time filter: Days (Default: 0). |
+| `--hours` | Time filter: Hours (Default: 1). |
+| `--minutes` | Time filter: Minutes (Default: 0). |
+| `--homeserver` | Custom homeserver URL. |
+
+### Interactive Keys
+
+* `y` : Delete.
+* `n` : Skip.
+* `a` : **Delete All** remaining items automatically.
+* `q` : Quit.
 
 ## Examples
 
-**1. Search in an encrypted room:**
+**Search for a keyword:**
 
 ```bash
-python localmoderation.py "!roomID:matrix.org" --search "test" --days 1 --e2ee
+localmoderationmatrix "!roomID:matrix.org" --search "spam"
 ```
 
-**2. Scan with wordlist and log actions:**
+**Scan with a wordlist and log actions:**
 
 ```bash
-python localmoderation.py "!roomID:matrix.org" --file forbidden.txt --days 7 --log-room "!LogRoomID:matrix.org"
+localmoderationmatrix "!roomID:matrix.org" --file words.txt --days 7 --log-room "!LogRoomID:matrix.org"
 ```
 
-**3. Delete media older than 90 days:**
+**Delete media older than 90 days:**
 
 ```bash
-python localmoderation.py "!roomID:matrix.org" --purge-media 90
+localmoderationmatrix "!roomID:matrix.org" --purge-media 90
 ```
 
-**4. Delete ALL past media in an encrypted room:**
+**Delete ALL stickers:**
 
 ```bash
-python localmoderation.py "!roomID:matrix.org" --purge-media 0 --e2ee
+localmoderationmatrix "!roomID:matrix.org" --purge-sticker 0
 ```
 
-## Note
+**Custom time filter:**
 
-If messages aren't found, the room is likely encrypted. Add `--e2ee` to your command.
+```bash
+localmoderationmatrix "!roomID:matrix.org" --search "test" --days 3 --hours 12
+```
+
+## Building from Source
+
+**PyPI Package:**
+
+```bash
+uv build
+```
+
+**Standalone Executable:**
+
+```bash
+pyinstaller --onefile --name LocalModerationMatrix --clean --noconfirm --optimize 2 src/localmoderationmatrix/cli.py
+```
+
+## License
+
+Apache-2.0
