@@ -1,1 +1,1 @@
-matrix-nio>=0.25.2
+matrix-nio>=0.26.0

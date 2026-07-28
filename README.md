@@ -1,8 +1,6 @@
 # LocalModeration for Matrix
 
-A CLI tool for bulk message deletion, media cleanup, and sticker purge in Matrix rooms.
-
-> **Note:** This tool targets **public (unencrypted) rooms**. Encrypted messages are skipped automatically.
+A CLI tool for bulk message deletion, media cleanup, and sticker purge in public (unencrypted) Matrix rooms. Encrypted messages are skipped automatically.
 
 ## Installation
 
@@ -25,6 +23,7 @@ uv tool install localmoderationmatrix
 ## Session
 
 Once logged in, your session is saved in your home directory. Just enter your **User ID** on the next run to auto-login.
+If you need to clear the saved session, type `reset` as your User ID.
 
 ## Usage
 
@@ -39,6 +38,7 @@ localmoderationmatrix <room_id> [options]
 | `room_id` | (Required) The Matrix room ID. |
 | `--search` | Search for a single keyword. |
 | `--file` | Search using a wordlist file (one word per line). |
+| `--interactive` | Scan room once and enter Interactive Hub mode. |
 | `--purge-media` | Delete media older than X days (`0` for all). |
 | `--purge-sticker` | Delete stickers older than X days (`0` for all). |
 | `--log-room` | Room ID to send moderation logs. |
@@ -52,7 +52,7 @@ localmoderationmatrix <room_id> [options]
 * `y` : Delete.
 * `n` : Skip.
 * `a` : **Delete All** remaining items automatically.
-* `q` : Quit.
+* `q` : Quit current review (returns to menu in Interactive Mode).
 
 ## Examples
 
@@ -74,16 +74,10 @@ localmoderationmatrix "!roomID:matrix.org" --file words.txt --days 7 --log-room 
 localmoderationmatrix "!roomID:matrix.org" --purge-media 90
 ```
 
-**Delete ALL stickers:**
+**Interactive Mode (Scan once, filter instantly):**
 
 ```bash
-localmoderationmatrix "!roomID:matrix.org" --purge-sticker 0
-```
-
-**Custom time filter:**
-
-```bash
-localmoderationmatrix "!roomID:matrix.org" --search "test" --days 3 --hours 12
+localmoderationmatrix "!roomID:matrix.org" --interactive --days 7
 ```
 
 ## Building from Source
@@ -97,7 +91,7 @@ uv build
 **Standalone Executable:**
 
 ```bash
-pyinstaller --onefile --name LocalModerationMatrix --clean --noconfirm --optimize 2 src/localmoderationmatrix/cli.py
+pyinstaller --onefile --name LocalModerationMatrix --clean --noconfirm --optimize 2 --collect-all localmoderationmatrix src/localmoderationmatrix/cli.py
 ```
 
 ## License
