@@ -1,4 +1,4 @@
-name: Release Check
+name: Release Check and Build
 
 on:
   push:
@@ -26,3 +26,30 @@ jobs:
 
       - name: Run Tests
         run: uv run pytest
+
+  build-binaries:
+    needs: test-and-lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Set up Python
+        run: uv python install 3.13
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Build executable
+        run: uv run pyinstaller --onefile --name LocalModerationMatrix --clean --noconfirm --optimize 2 --collect-all localmoderationmatrix src/localmoderationmatrix/cli.py
+
+      - name: Upload binaries to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
