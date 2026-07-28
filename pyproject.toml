@@ -57,4 +57,8 @@ build-backend = "hatchling.build"
 packages = ["src/localmoderationmatrix"]
 
 [dependency-groups]
-dev = ["pyinstaller>=6.21.0", "pytest>=9.1.1"]
+dev = [
+    "pyinstaller>=6.21.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.0",
+]
