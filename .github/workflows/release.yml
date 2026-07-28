@@ -5,25 +5,23 @@ on:
     tags:
       - "[0-9]+.[0-9]+.[0-9]+"
 
+permissions:
+  contents: write
+
 jobs:
   test-and-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Install uv
         uses: astral-sh/setup-uv@v3
-
       - name: Set up Python
         run: uv python install 3.13
-
       - name: Install dependencies
         run: uv sync
-
       - name: Run Ruff (Linting)
         run: uv run ruff check .
-
       - name: Run Tests
         run: uv run pytest
 
@@ -32,24 +30,27 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - os: windows-latest
+            asset_name: LocalModerationMatrix.exe
+          - os: ubuntu-latest
+            asset_name: LocalModerationMatrix-linux
+          - os: macos-latest
+            asset_name: LocalModerationMatrix-macos
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Install uv
         uses: astral-sh/setup-uv@v3
-
       - name: Set up Python
         run: uv python install 3.13
-
       - name: Install dependencies
         run: uv sync
-
       - name: Build executable
         run: uv run pyinstaller --onefile --name LocalModerationMatrix --clean --noconfirm --optimize 2 --collect-all localmoderationmatrix src/localmoderationmatrix/cli.py
-
-      - name: Upload binaries to release
+      - name: Rename binary
+        run: mv dist/LocalModerationMatrix dist/${{ matrix.asset_name }}
+      - name: Upload to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*
+          files: dist/${{ matrix.asset_name }}
